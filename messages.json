@@ -1,0 +1,35 @@
+{
+    "english": {
+        "roleText": "",
+        "additive": "and"
+
+    },
+    "portugues": {
+        "roleText": "Você tem o(s) cargo(s) ",
+        "additive": "e",
+        "dmQuiz": {
+            "email": "Muito bem! Qual o nome do seu woozen?",
+            "confirmEmail": "Que nome bonito! Qual é o seu e-mail? Lembre-se que só aceitamos GMAIL!!",
+            "woozenName": "Digite o nome do seu Woozen:",
+            "hasInstagram": "Bacana! Você tem Instagram? (Digite: Sim ou Não)",
+            "instagramName": "Qual o seu instagram?",
+            "dontHaveInstagram": "Poxa que pena! Nós iriamos amar curtir suas postagens. De qualquer forma, anotei aqui suas informações. Valeu! Você será notificado por e-mail quando receber acesso aos PNGs. Isso pode demorar um pouquinho.",
+            "quizDone": "Que incrível! Anotei aqui suas informações. Valeu! Você será notificado por e-mail quando receber acesso aos PNGs. Isso pode demorar um pouquinho.",
+            "wrongEmail": "Ei! Não consigo te dar acesso com esse endereço de e-mail. Por favor, digite um e-mail GMAIL.",
+            "emailDoesntMatch": "Os email`s não coincidem, por favor, utilize o !drive para fazer o questionário novamente"
+        },
+        "alertToSeDM": "Você solicitou acesso ao Google Drive. Por favor, verifique suas mensagens privadas.",
+        "driveAccessInstructionDM": "Olá [user]. Recebi sua solicitação de acesso aos PNGs! Não se esqueça de ler as regras do Google Drive no canal de texto #googledrive. Se você infringir alguma regra estará sujeito a uma **punição**. Para te dar acesso, vou precisar fazer algumas perguntinhas! Não se preocupe, essas informações não serão compartilhadas com ninguém. Digite !drive aqui para iniciar o questionário.",
+        "driveAccessInstruction": {
+            "part1": "Olá ",
+            "part2": ", infelizmente você ainda não pode ter acesso ao Google Drive! \n- Para ter acesso ao Google Drive, é necessário que você tenha atingido o nível 1 no servidor. \n- Para subir de nível, basta conversar com outros usuários nas salas de chat.\n- Utilize o comando: **!rank** para ver seu nível atual'+\n*Atenciosamente, equipe EditorZ* "
+        },
+        "userJoin": "Olá! Seja muito bem-vind**e** ao **EditorZ**. O maior grupo de editores de Woozworld. Você tem interesse em acessar nossos PNGs exclusivos? Então assista esse breve tutorial! [link do vídeo]"
+    },
+    "espanol": {
+
+    },
+    "francais": {
+
+    }
+}
