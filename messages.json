@@ -1,16 +1,19 @@
 {
-    "english": {
+    "English": {
         "roleText": "",
-        "additive": "and"
+        "additive": "and",
+        "dmQuiz": {
+            "woozenName": "Very well! What your woozen`s name?"
+        }
 
     },
-    "portugues": {
+    "Portugues": {
         "roleText": "Você tem o(s) cargo(s) ",
         "additive": "e",
         "dmQuiz": {
-            "email": "Muito bem! Qual o nome do seu woozen?",
-            "confirmEmail": "Que nome bonito! Qual é o seu e-mail? Lembre-se que só aceitamos GMAIL!!",
-            "woozenName": "Digite o nome do seu Woozen:",
+            "woozenName": "Muito bem! Qual o nome do seu woozen?",
+            "email": "Que nome bonito! Qual é o seu e-mail? Lembre-se que só aceitamos GMAIL!!",
+            "confirmEmail": "Esse é realmente seu e-mail?",
             "hasInstagram": "Bacana! Você tem Instagram? (Digite: Sim ou Não)",
             "instagramName": "Qual o seu instagram?",
             "dontHaveInstagram": "Poxa que pena! Nós iriamos amar curtir suas postagens. De qualquer forma, anotei aqui suas informações. Valeu! Você será notificado por e-mail quando receber acesso aos PNGs. Isso pode demorar um pouquinho.",
@@ -26,10 +29,10 @@
         },
         "userJoin": "Olá! Seja muito bem-vind**e** ao **EditorZ**. O maior grupo de editores de Woozworld. Você tem interesse em acessar nossos PNGs exclusivos? Então assista esse breve tutorial! [link do vídeo]"
     },
-    "espanol": {
+    "Espanol": {
 
     },
-    "francais": {
+    "Francais": {
 
     }
 }

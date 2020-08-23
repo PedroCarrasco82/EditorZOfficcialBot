@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+
+const messages = require('./messages.json');
 const config = require('./config.json');
-const ytdl = require('ytdl-core');
 const userSchema = require('./schemas/user.schema');
 
 let usershasQuestion = [];
@@ -21,11 +22,6 @@ client.on("guildCreate", guild => {
     console.log(`O bot entrou no servidor: ${guild.name} (id: ${guild.id}). População: ${guild.memberCount} membros!`);
     
     updatedState();
-
-    // client.channels.cache.forEach(channel => {
-    //     if(channel.createdTimestamp === guild.createdTimestamp && channel.type === 'text')
-    //         channel.send('Chegueeei')
-    // })[=]
 });
 
 client.on("guildDelete", guild => {
@@ -40,10 +36,10 @@ client.on("message", async message => {
     const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
     const comando = args.shift().toLowerCase();
 
-    const userLanguage = catchUserLanguage(message.member);
+    const userLanguage = await catchUserLanguage(message.author);
     
     const commandExecute = {...commands};
-    commandExecute.language = userLanguage.name;
+    commandExecute.language = userLanguage.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
     
     if(commandExecute[customMessage || comando]){
        await commandExecute[customMessage || comando](message);
@@ -81,6 +77,7 @@ const commands = {
     },
 
     async drive(message){
+        const messageLanguage = messages[this.language];
         const username = message.author.username;
         const discriminator = message.author.discriminator;
 
@@ -94,23 +91,30 @@ const commands = {
             console.log(usershasQuestion)
 
             if(message.channel.type === 'dm'){
+                
                 if(!!!usershasQuestion.find( e => e === message.author.id)){
                     usershasQuestion.push(message.author.id);
+                
+                const dmQuizText = messageLanguage.dmQuiz;
 
                 const filter = m => m.author.id === message.author.id;
-                dmMessage.send('Olá, digite seu e-mail:');
+
+                dmMessage.send(dmQuizText.woozenName);
+                const woozName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
+                
+                dmMessage.send(dmQuizText.email);
                 const email = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
-                dmMessage.send('Confirme seu e-mail.');
+                
+                dmMessage.send(dmQuizText.confirmEmail);
                 const emailConfirm = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
                 
                 if(email.first().content === emailConfirm.first().content){
 
-                    dmMessage.send('Digite o nome do seu Woozen:');
-                    const woozName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
-                    dmMessage.send('Digite seu nome no instagram:');
+                   
+                    dmMessage.send(dmQuizText.instagramName);
                     const instagramName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
                     
-                    dmMessage.send('Muito obrigado(a) pelas informações, aguarde o convite do drive no seu email!(Isso pode levar um tempinho)');
+                    dmMessage.send(dmQuizText.quizDone);
                     
                     const userProperties = userSchema.validate({
                         requestDate: message.createdAt,
@@ -128,7 +132,7 @@ const commands = {
                     }
 
                 }else {
-                    dmMessage.send('Os email`s não coincidem, por favor, utilize o !drive para fazer o questionário novamente');
+                    dmMessage.send(dmQuizText.emailDoesntMatch);
                 }
                     usershasQuestion = usershasQuestion.filter(e => e !== message.author.id);
                     return;
@@ -198,7 +202,7 @@ async function removeRole(member, RoleName){
 
 async function getUserRoles(member){
     
-    const roles = client.guilds.cache.find(e => e.name === 'PBE -  EditorZ')
+    const roles = await client.guilds.cache.find(e => e.name === 'PBE -  EditorZ')
     .members.cache.get(member.id)
     .roles.cache;
 
@@ -206,13 +210,13 @@ async function getUserRoles(member){
     return roles;
 }
 
-function catchUserLanguage(member){
+async function catchUserLanguage(member){
     const roleFilter = (role, key, roleMap) => {
-        let langs = ['English', 'Français', 'Espanõl', 'Português'];
-        return langs.indexOf(role.name) > -1;
+        let langs = ['English', 'Francais', 'Espanol', 'Portugues'];
+        return langs.indexOf(role.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "")) > -1;
     };
     
-    const langRoles = member.roles.cache.find(roleFilter);
+    const langRoles = (await getUserRoles(member)).find(roleFilter);
 
     return langRoles;
 }
