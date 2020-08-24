@@ -11,5 +11,5 @@ module.exports = Joi.object({
                 return value;
         }),
         woozName: Joi.string(),
-        instagramName: Joi.string()
+        instagramName: Joi.string().allow('')
     })

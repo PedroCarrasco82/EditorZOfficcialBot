@@ -35,12 +35,12 @@ client.on("message", async message => {
     const customMessage = message.content === "Quem é a mais gatona?" ? "customMessage" : null;
     const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
     const comando = args.shift().toLowerCase();
-
+    
     const userLanguage = await catchUserLanguage(message.author);
     
     const commandExecute = {...commands};
     commandExecute.language = userLanguage.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-    
+
     if(commandExecute[customMessage || comando]){
        await commandExecute[customMessage || comando](message);
     }
@@ -50,6 +50,7 @@ const commands = {
     language:'',
 
     async roles(message) {
+        const roleMessage = message[this.language];
 
         const roles = await getUserRoles(message.author);
     
@@ -58,14 +59,14 @@ const commands = {
         const rolesText = rolesName.reduce((previousValue, currentValue, index, array) => {
     
             if(index === array.length - 1)
-                return previousValue + "** e **" + currentValue;
+                return previousValue + "** "+roleMessage.additive+" **" + currentValue;
             else{
                 return previousValue+"**, **"+currentValue;
             }
     
         }).replace('@','');
         
-        message.reply("Você tem o(s) cargo(s) **"+rolesText+ "**");
+        message.reply(roleMessage.roleText+"**"+rolesText+ "**");
     },
 
     async customMessage(message) {
@@ -88,8 +89,6 @@ const commands = {
         if(hasMandatoryRole){
             const dmMessage = client.users.cache.get(message.author.id);
 
-            console.log(usershasQuestion)
-
             if(message.channel.type === 'dm'){
                 
                 if(!!!usershasQuestion.find( e => e === message.author.id)){
@@ -99,59 +98,89 @@ const commands = {
 
                 const filter = m => m.author.id === message.author.id;
 
-                dmMessage.send(dmQuizText.woozenName);
+                const messageNameW = await dmMessage.send(dmQuizText.woozenName);
                 const woozName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
                 
-                dmMessage.send(dmQuizText.email);
-                const email = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
-                
-                dmMessage.send(dmQuizText.confirmEmail);
-                const emailConfirm = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
-                
-                if(email.first().content === emailConfirm.first().content){
+                const filterEmoji = (reaction, user)=> {
+                    return ['✅', '❌'].includes(reaction.emoji.name) && user.id === message.author.id;
+                };
 
-                   
-                    dmMessage.send(dmQuizText.instagramName);
-                    const instagramName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
-                    
-                    dmMessage.send(dmQuizText.quizDone);
-                    
-                    const userProperties = userSchema.validate({
-                        requestDate: message.createdAt,
-                        discordUsername: username,
-                        discordDiscriminator: discriminator,
-                        woozName: woozName.first().content,
-                        instagramName: instagramName.first().content,
-                        email: email.first().content
-                    });
-                    
-                    if(userProperties.error){
-                        userProperties.error.details.forEach(detail => {
-                            dmMessage.send(detail.message);
-                        })
+                let wrongEmail = true;
+                let email;
+                let count = 1;
+
+                while(wrongEmail){
+
+                    if(count===1){
+                        dmMessage.send(dmQuizText.email);
+                    }else{
+                        dmMessage.send(dmQuizText.wrongEmail);
                     }
+                    email = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
+                   
+                    const confirmEmail = await dmMessage.send(dmQuizText.confirmEmail);
 
-                }else {
-                    dmMessage.send(dmQuizText.emailDoesntMatch);
+                    confirmEmail.react('✅').then(()=> confirmEmail.react('❌'));
+
+                    wrongEmail = await confirmEmail.awaitReactions(filterEmoji, {time:100000, max: 1})
+                        .then(collected=>{
+                            if(collected.first().emoji.name === '✅'){
+                                return false;
+                            }
+                            else{
+                                count++;
+                                return true;
+                            }
+                        });     
                 }
-                    usershasQuestion = usershasQuestion.filter(e => e !== message.author.id);
-                    return;
+               
+                    
+                const hasInstagramMessage = await dmMessage.send(dmQuizText.hasInstagram);
+
+                hasInstagramMessage.react('✅').then(()=> hasInstagramMessage.react('❌'));
+
+                const hasInstagram = await hasInstagramMessage.awaitReactions(filterEmoji, {time:100000, max: 1}).then(collected=>collected.first().emoji.name); 
+                
+                let instagramName;
+
+                if(hasInstagram === '✅'){
+                    dmMessage.send(dmQuizText.instagramName);
+                    instagramName = await (await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']})).first().content;
+                    await dmMessage.send(dmQuizText.quizDone);
+                }else{
+                    await dmMessage.send(dmQuizText.dontHaveInstagramDone);
+                }
+                                
+                const userProperties = userSchema.validate({
+                    requestDate: message.createdAt,
+                    discordUsername: username,
+                    discordDiscriminator: discriminator,
+                    woozName: woozName.first().content,
+                    instagramName: instagramName,
+                    email: email.first().content
+                });
+                
+                if(userProperties.error){
+                    userProperties.error.details.forEach(detail => {
+                        dmMessage.send(detail.message);
+                    })
+                }
+
+
+                usershasQuestion = usershasQuestion.filter(e => e !== message.author.id);
+                return;
                 } 
             }else{
 
-                message.reply('Olá, dê uma olhadinha na sua DM :wink:');
-                dmMessage.send('Olá, tudo bem? Para acessar o drive, digite !drive aqui na DM.');
+                message.reply(messageLanguage.alertToSeeDM);
+                dmMessage.send(messageLanguage.driveAccessInstructionDM.part1 + message.author.toString() + messageLanguage.driveAccessInstructionDM.part2);
             }
             
 
         }else{
             const emoji = client.guilds.cache.find(e => e.name === 'PBE -  EditorZ').emojis.cache.find(e => e.name == 'EditorZ');
             
-            message.channel.send('Olá '+message.author.toString()+', infelizmente você ainda não pode ter acesso ao Google Drive! '+
-            '\n- Para ter acesso ao Google Drive, é necessário que você tenha atingido o nível 1 no servidor. '+
-            '\n- Para subir de nível, basta conversar com outros usuários nas salas de chat.'+
-            '\n- Utilize o comando: **!rank** para ver seu nível atual'+
-            '\n*Atenciosamente, equipe EditorZ* '+emoji.toString());
+            message.channel.send(messageLanguage.driveAccessInstruction.part1 + message.author.toString() + messageLanguage.driveAccessInstruction.part2+emoji.toString());
         }
     },
 
