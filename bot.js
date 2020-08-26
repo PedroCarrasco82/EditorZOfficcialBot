@@ -4,8 +4,7 @@ const client = new Discord.Client();
 const messages = require('./messages.json');
 const config = require('./config.json');
 const userSchema = require('./schemas/user.schema');
-
-let usershasQuestion = [];
+const botController = require('./controller/botController');
 
 function updatedState(){
     client.user.setActivity({
@@ -13,38 +12,13 @@ function updatedState(){
     });
 }
 
-client.on("ready", ()=>{
-    console.log(`O bot foi iniciado, com ${ client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} ${client.guilds.cache.size > 1 ? "servidores" : "servidor"}.`);
-    updatedState();
-});
+client.on("ready", ()=>botController.botReady(client));
 
-client.on("guildCreate", guild => {
-    console.log(`O bot entrou no servidor: ${guild.name} (id: ${guild.id}). População: ${guild.memberCount} membros!`);
-    
-    updatedState();
-});
+client.on("guildCreate", (guild)=>botController.guildCreate(client, guild));
 
-client.on("guildDelete", guild => {
-    console.log(`O bot foi removido do servidor: ${guild.name}`);
-    updatedState();
-});
+client.on("guildDelete", (guild)=>botController.guildDelete(client, guild));
 
-client.on("message", async message => {
-    if(message.author.bot) { return; }
-    
-    const customMessage = message.content === "Quem é a mais gatona?" ? "customMessage" : null;
-    const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-    const comando = args.shift().toLowerCase();
-    
-    const userLanguage = await catchUserLanguage(message.author);
-    
-    const commandExecute = {...commands};
-    commandExecute.language = userLanguage.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-
-    if(commandExecute[customMessage || comando]){
-       await commandExecute[customMessage || comando](message);
-    }
-});
+client.on("message", (message)=>botController.messageController(client, message));
 
 const commands = {
     language:'',
