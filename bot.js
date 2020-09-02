@@ -1,9 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-const messages = require('./messages.json');
 const config = require('./config.json');
-const userSchema = require('./schemas/user.schema');
 const botController = require('./controller/botController');
 
 function updatedState(){
