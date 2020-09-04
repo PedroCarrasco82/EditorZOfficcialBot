@@ -22,6 +22,9 @@ Projeto tem as seguintes funcionalidades:
 ## TODO LIST
 
 ✅ Controlar os cargos dos usuários
+
 🕗 Dar acesso a o **Google Drive**
+
 🕗 Armazenamento dos usuários no **Google Sheets**
+
 ❌ Armazenamento de __reports__
