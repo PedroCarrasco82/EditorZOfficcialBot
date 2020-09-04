@@ -9,11 +9,11 @@ Projeto tem as seguintes funcionalidades:
 * Armazenamento de todos os usuários que solicitaram no **Google Sheets**: Funcionalidade .
 * Armazenar os __reports__ de usuários (Reporte de bugs, problemas com email, etc...).
 
-## Commands
+## Comandos
 ### 1.Roles
 ### 2.Help
 ### 3.Drive
-### 4.LanguageCommands
+### 4.Comandos de Linguagem
     1.Portugues
     2.English
     3.Espanol
@@ -22,6 +22,6 @@ Projeto tem as seguintes funcionalidades:
 ## TODO LIST
 
 ✅ Controlar os cargos dos usuários
-✅ Dar acesso a o **Google Drive**
-❌ Armazenamento dos usuários no **Google Sheets**
+🕗 Dar acesso a o **Google Drive**
+🕗 Armazenamento dos usuários no **Google Sheets**
 ❌ Armazenamento de __reports__
