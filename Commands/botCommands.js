@@ -2,7 +2,8 @@ const messages = require('../messages.json');
 const roleManager = require('../Utils/roleManager');
 const userSchema = require('../schemas/user.schema');
 const driveManager = require('../Utils/driveManager');
-const { date } = require('@hapi/joi');
+require('dotenv/config');
+
 
 let usershasQuestion = [];
 
@@ -47,7 +48,7 @@ const commands = {
 
             const roles = await roleManager.getUserRoles(message.author, this.client);
 
-            const hasMandatoryRole = roles.find(e => e.name === 'Editing Sometimes');
+            const hasMandatoryRole = roles.find(e => e.name === process.env.MANDATORY_ROLE);
 
             if(hasMandatoryRole){
                 const dmMessage = this.client.users.cache.get(message.author.id);
@@ -190,26 +191,26 @@ const commands = {
     },
 
     async portugues(message){
-        await roleManager.addLanguageByRoleID(message.member, '745772024302927902', this.client);
-        await roleManager.removeRole(message.member, 'Member', this.client);
+        await roleManager.addLanguageByRoleID(message.member, process.env.PORTUGUESE_ID, this.client);
+        await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         message.delete();
     },
 
     async english(message){
-        await roleManager.addLanguageByRoleID(message.member, '745772098240118784', this.client);
-        await roleManager.removeRole(message.member, 'Member', this.client);
+        await roleManager.addLanguageByRoleID(message.member, process.env.ENGLISH_ID, this.client);
+        await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         message.delete();
     },
 
     async espanol(message){
-        await roleManager.addLanguageByRoleID(message.member, '745772124391866458', this.client);
-        await roleManager.removeRole(message.member, 'Member', this.client);
+        await roleManager.addLanguageByRoleID(message.member, process.env.SPANISH_ID, this.client);
+        await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         message.delete();
     },
 
     async francais(message){
-        await roleManager.addLanguageByRoleID(message.member, '745772064090357821', this.client);
-        await roleManager.removeRole(message.member, 'Member', this.client);
+        await roleManager.addLanguageByRoleID(message.member, process.env.FRENCH_ID, this.client);
+        await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         await message.delete();
     }
 

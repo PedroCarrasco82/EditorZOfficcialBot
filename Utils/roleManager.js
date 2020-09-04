@@ -1,3 +1,5 @@
+require('dotenv/config');
+
 const roleManager = {
     async addLanguageByRoleID(member, roleID, client){
 
@@ -20,7 +22,7 @@ const roleManager = {
     
     async getUserRoles(member, client){
         
-        const roles = await client.guilds.cache.find(e => e.name === 'PBE -  EditorZ')
+        const roles = await client.guilds.cache.find(e => e.name === process.env.SERVER_NAME)
         .members.cache.get(member.id)
         .roles.cache;
     
