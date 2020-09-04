@@ -10,10 +10,10 @@ Projeto tem as seguintes funcionalidades:
 * Armazenar os __reports__ de usuários (Reporte de bugs, problemas com email, etc...).
 
 ## Comandos
-### 1.Roles
-### 2.Help
-### 3.Drive
-### 4.Comandos de Linguagem
+ 1.Roles
+ 2.Help
+ 3.Drive
+ 4.Comandos de Linguagem
     1.Portugues
     2.English
     3.Espanol
