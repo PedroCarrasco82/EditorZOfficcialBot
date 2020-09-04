@@ -14,10 +14,10 @@ Projeto tem as seguintes funcionalidades:
 ### 2.Help
 ### 3.Drive
 ### 4.LanguageCommands
-####    1.portugues
-####    2.english
-####    3.espanol
-####    4.francais
+    1.Portugues
+    2.English
+    3.Espanol
+    4.Francais
 
 ## TODO LIST
 
