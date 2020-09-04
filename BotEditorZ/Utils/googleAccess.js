@@ -12,13 +12,15 @@ async function googleApiAccess(){
 
         const readFile = util.promisify(fs.readFile);
 
-        const {oAuth2Client, token} = (await readFile('./config/credentials.json').then(async (content) => {          
+        const {oAuth2Client, token} = await (await readFile('./config/credentials.json').then(async (content) => {          
           return await authorize(JSON.parse(content));
         }).catch(err =>console.log('Error loading client secret file:', err)));
 
-        oAuth2Client.setCredentials(token);
+        if(token){
+          oAuth2Client.setCredentials(token);
 
-        return oAuth2Client;
+          return oAuth2Client;
+        }
 
 }
 
