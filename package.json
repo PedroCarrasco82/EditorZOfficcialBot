@@ -11,6 +11,8 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "googleapis": "^39.2.0",
     "nodemon": "^2.0.4"
   },
   "devDependencies": {},

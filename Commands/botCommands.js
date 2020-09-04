@@ -1,6 +1,8 @@
 const messages = require('../messages.json');
 const roleManager = require('../Utils/roleManager');
 const userSchema = require('../schemas/user.schema');
+const driveManager = require('../Utils/driveManager');
+const { date } = require('@hapi/joi');
 
 let usershasQuestion = [];
 
@@ -60,7 +62,23 @@ const commands = {
                     const filter = m => m.author.id === message.author.id;
 
                     const messageNameW = await dmMessage.send(dmQuizText.woozenName);
-                    const woozName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
+
+                    let wrongWoozName = true;
+
+                    let woozName;
+
+                    do{
+                        woozName = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
+                        
+                        if(woozName.first().content.includes(' ')){
+                            dmMessage.send(dmQuizText.invalidWoozName);
+                            wrongWoozName = true;
+                        }else{
+                            wrongWoozName = false;
+                        }
+
+                    }while(wrongWoozName)
+                    
                     
                     const filterEmoji = (reaction, user)=> {
                         return ['✅', '❌'].includes(reaction.emoji.name) && user.id === message.author.id;
@@ -74,25 +92,32 @@ const commands = {
 
                         if(count===1){
                             dmMessage.send(dmQuizText.email);
-                        }else{
+                        }else if(count > 1){
                             dmMessage.send(dmQuizText.wrongEmail);
+                        }else if(count === 0){
+                            dmMessage.send(dmQuizText.wrongEmailDomain);
                         }
+
                         email = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
-                    
-                        const confirmEmail = await dmMessage.send(dmQuizText.confirmEmail);
 
-                        confirmEmail.react('✅').then(()=> confirmEmail.react('❌'));
+                        if(email.first().content.includes('@') && email.first().content.split('@')[1] === 'gmail.com'){
+                            const confirmEmail = await dmMessage.send(dmQuizText.confirmEmail);
 
-                        wrongEmail = await confirmEmail.awaitReactions(filterEmoji, {time:100000, max: 1})
+                            confirmEmail.react('✅').then(()=> confirmEmail.react('❌'));                            
+                            wrongEmail = await confirmEmail.awaitReactions(filterEmoji, {time:100000, max: 1})
                             .then(collected=>{
                                 if(collected.first().emoji.name === '✅'){
                                     return false;
                                 }
                                 else{
-                                    count++;
+                                    count+=2;
                                     return true;
                                 }
-                            });     
+                            });   
+                        }else{
+                            count = 0;
+                        }
+  
                     }
                 
                         
@@ -111,21 +136,37 @@ const commands = {
                     }else{
                         await dmMessage.send(dmQuizText.dontHaveInstagramDone);
                     }
-                                    
-                    const userProperties = userSchema.validate({
-                        requestDate: message.createdAt,
+
+
+                    const dateRequestGMT = new Date(message.createdAt);
+                    const dateBrasilia = new Date(dateRequestGMT.valueOf() - dateRequestGMT.getTimezoneOffset() * 60000);
+
+                    const user = {
+                        requestDate: dateBrasilia,
                         discordUsername: username,
                         discordDiscriminator: discriminator,
                         woozName: woozName.first().content,
-                        instagramName: instagramName,
-                        email: email.first().content
-                    });
+                        instagramName: instagramName || '',
+                        email: email.first().content,
+                        language: this.language
+                    };
+                                    
+                    const userProperties = userSchema.validate(user);
                     
                     if(userProperties.error){
                         userProperties.error.details.forEach(detail => {
                             dmMessage.send(detail.message);
-                        })
+                        });
+                        return;
                     }
+
+                    console.log(userProperties.value);
+
+                    driveManager.user = user;
+
+                    driveManager.emailMessage = messageLanguage.emailMessage;
+
+                    await driveManager.permissionAccessDrive();
 
 
                     usershasQuestion = usershasQuestion.filter(e => e !== message.author.id);

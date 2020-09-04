@@ -1,6 +1,6 @@
 
 const commands = require('../Commands/botCommands');
-const config = require('../config.json');
+const config = require('../config/config.json');
 const roleManager = require('../Utils/roleManager');
 
 const botController = {
