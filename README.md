@@ -1,7 +1,7 @@
 # Bot Oficial do servidor EditorZ
 
 ## O que é esse projeto?
-Esse projeto consiste em desenvolver um bot do **Discord** para automatizar os processos realizados no servidor [EditorZ](discord.gg/MGcUHtd).
+Esse projeto consiste em desenvolver um bot do **Discord** para automatizar os processos realizados no servidor [EditorZ](https://discord.gg/MGcUHtd).
 
 Projeto tem as seguintes funcionalidades:
 * Controlar os cargos dos usuários: Funcionalidade em que cada um dos usuários é necessário ter somente um cargo de linguagem.
