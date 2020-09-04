@@ -9,7 +9,8 @@ const SCOPES = [
     'https://www.googleapis.com/auth/drive.activity.readonly',
     'https://www.googleapis.com/auth/drive.readonly',
     'https://www.googleapis.com/auth/drive.metadata.readonly',
-    'https://www.googleapis.com/auth/drive.scripts'
+    'https://www.googleapis.com/auth/drive.scripts',
+    'https://www.googleapis.com/auth/spreadsheets'
 ];
 
 module.exports = SCOPES;

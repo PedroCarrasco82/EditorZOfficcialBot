@@ -1,7 +1,7 @@
 const Joi = require('@hapi/joi');
 
 module.exports = Joi.object({
-        requestDate: Joi.date().iso(),
+        requestDate: Joi.date(),
         discordUsername: Joi.string(),
         discordDiscriminator: Joi.string(),
         email: Joi.string().email().required().custom((value, helper)=>{
@@ -10,7 +10,12 @@ module.exports = Joi.object({
             else
                 return value;
         }),
-        woozName: Joi.string(),
+        woozName: Joi.string().custom(value => {
+            if(value.includes(' '))
+                throw new Error('This WoozNames is invalid');
+            else
+                return value;
+        }),
         instagramName: Joi.string().allow(''),
         language: Joi.string()
     })
