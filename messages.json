@@ -32,8 +32,10 @@
             "part1": "Olá ",
             "part2": ", infelizmente você ainda não pode ter acesso ao Google Drive! \n- Para ter acesso ao Google Drive, é necessário que você tenha atingido o nível 1 no servidor. \n- Para subir de nível, basta conversar com outros usuários nas salas de chat.\n- Utilize o comando: **!rank** para ver seu nível atual\n*Atenciosamente, equipe EditorZ* "
         },
+        "alreadyHasDriveAccess": ", você já tem acesso ao drive.",
         "userJoin": "Olá! Seja muito bem-vind**e** ao **EditorZ**. O maior grupo de editores de Woozworld. Você tem interesse em acessar nossos PNGs exclusivos? Então assista esse breve tutorial! [link do vídeo]",
-        "emailMessage": "Agora você tem acesso ao drive!\n\nNão esqueça que toda vez que você usar nossos pngs, use a hashtag #WoozEditorZ para dar créditos ao nosso servidor.\n\nBoas edições!\n-Team EditorZ"
+        "emailMessage": "Agora você tem acesso ao drive!\n\nNão esqueça que toda vez que você usar nossos pngs, use a hashtag #WoozEditorZ para dar créditos ao nosso servidor.\n\nBoas edições!\n-Team EditorZ",
+        "helpMessage": ""
     },
     "Espanol": {
         "emailMessage": "¡Ahora tienes acceso al jugador!\n\nRecuerde que cada vez que use nuestros pngs, use el hashtag #WoozEditorZ para acreditar nuestro servidor.\n\n¡Buenos retoques!\n-Team EditorZ"

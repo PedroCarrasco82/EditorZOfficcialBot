@@ -1,7 +1,7 @@
 const messages = require('../messages.json');
 const roleManager = require('../Utils/roleManager');
 const userSchema = require('../schemas/user.schema');
-const driveManager = require('../Utils/driveManager');
+const driveManager = require('../Utils/googleApiManager');
 require('dotenv/config');
 
 
@@ -50,7 +50,9 @@ const commands = {
 
             const hasMandatoryRole = roles.find(e => e.name === process.env.MANDATORY_ROLE);
 
-            if(hasMandatoryRole){
+            const hasAccess = await driveManager.userIncludesInDrive(discriminator, this.language);
+
+            if(hasMandatoryRole && !!!hasAccess){
                 const dmMessage = this.client.users.cache.get(message.author.id);
 
                 if(message.channel.type === 'dm'){
@@ -62,7 +64,7 @@ const commands = {
 
                     const filter = m => m.author.id === message.author.id;
 
-                    const messageNameW = await dmMessage.send(dmQuizText.woozenName);
+                    await dmMessage.send(dmQuizText.woozenName);
 
                     let wrongWoozName = true;
 
@@ -161,14 +163,15 @@ const commands = {
                         return;
                     }
 
-                    console.log(userProperties.value);
-
-                    driveManager.user = user;
-
                     driveManager.emailMessage = messageLanguage.emailMessage;
 
-                    await driveManager.permissionAccessDrive();
+                    await driveManager.permissionAccessDrive(user);
 
+                    await driveManager.addUserInDriveSheet(user);
+
+                    const member = await roleManager.getUserMember(message.author, this.client);
+
+                    await roleManager.addRoleByName(member, 'Drive Access', this.client);
 
                     usershasQuestion = usershasQuestion.filter(e => e !== message.author.id);
                     return;
@@ -183,7 +186,11 @@ const commands = {
             }else{
                 const emoji = this.client.guilds.cache.find(e => e.name === 'PBE -  EditorZ').emojis.cache.find(e => e.name == 'EditorZ');
                 
-                message.channel.send(messageLanguage.driveAccessInstruction.part1 + message.author.toString() + messageLanguage.driveAccessInstruction.part2+emoji.toString());
+                if(!hasMandatoryRole)
+                    message.channel.send(messageLanguage.driveAccessInstruction.part1 + message.author.toString() + messageLanguage.driveAccessInstruction.part2+emoji.toString());
+                
+                if(!!hasAccess)
+                    message.channel.send(message.author.toString() + messageLanguage.alreadyHasDriveAccess);
             }
         }else{
             message.channel.send('Escolha a sua linguagem no chat **language**');
@@ -191,19 +198,19 @@ const commands = {
     },
 
     async portugues(message){
-        await roleManager.addLanguageByRoleID(message.member, process.env.PORTUGUESE_ID, this.client);
+        await roleManager.addRoleByID(message.member, process.env.PORTUGUESE_ID, this.client);
         await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         message.delete();
     },
 
     async english(message){
-        await roleManager.addLanguageByRoleID(message.member, process.env.ENGLISH_ID, this.client);
+        await roleManager.addRoleByID(message.member, process.env.ENGLISH_ID, this.client);
         await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         message.delete();
     },
 
     async espanol(message){
-        await roleManager.addLanguageByRoleID(message.member, process.env.SPANISH_ID, this.client);
+        await roleManager.addRoleByID(message.member, process.env.SPANISH_ID, this.client);
         await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         message.delete();
     },
@@ -212,6 +219,49 @@ const commands = {
         await roleManager.addLanguageByRoleID(message.member, process.env.FRENCH_ID, this.client);
         await roleManager.removeRole(message.member, process.env.STANDARD_ROLE, this.client);
         await message.delete();
+    },
+
+    async report(message){
+        if(message.channel.name === process.env.REPORT_CHAT_NAME || message.channel.type === 'dm'){
+
+            const userName = message.author.username;
+            const userDiscriminator = message.author.discriminator;
+            
+            let sendMessage;
+            
+            if(message.channel.type === 'dm'){
+                sendMessage = this.client.users.cache.get(message.author.id);
+            }else{
+                sendMessage = message.channel;
+            }
+
+            const allUserReports = await driveManager.allUserReports(userDiscriminator);
+  
+            if(allUserReports.length >= 3){
+                sendMessage.send('Você já tem 3 reports na fila de análise.');
+                return;
+            }
+
+            sendMessage.send('Digite o que você deseja relatar: ');
+
+            const filter = m => m.author.id === message.author.id;
+
+            const reportMessage = await message.channel.awaitMessages(filter, {time: 100000, max: 1, errors: ['time','max']});
+
+            const dateRequestGMT = new Date(message.createdAt);
+            const dateBrasilia = new Date(dateRequestGMT.valueOf() - dateRequestGMT.getTimezoneOffset() * 60000);
+
+            const report = {
+                requestData: dateBrasilia,
+                userName,
+                userDiscriminator,
+                message: reportMessage.first().content
+            }
+
+            await driveManager.addReportInSheet(report);
+
+            sendMessage.send('Esse relato já foi enviado!');
+        }
     }
 
 }

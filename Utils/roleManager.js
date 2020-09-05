@@ -1,7 +1,7 @@
 require('dotenv/config');
 
 const roleManager = {
-    async addLanguageByRoleID(member, roleID, client){
+    async addRoleByID(member, roleID, client){
 
         if(!(await this.getUserLanguage(member, client))){
             const currentRole = await client.guilds.cache.get(member.guild.id).roles.cache.get(roleID);
@@ -30,6 +30,11 @@ const roleManager = {
         return roles;
     },
     
+    async getAllRoles(client){
+        console.log(process.env.SERVER_NAME);
+        return client.guilds.cache.find(e => e.name === process.env.SERVER_NAME).roles.cache;
+    },
+    
     async getUserLanguage(member, client){
         const roleFilter = (role, key, roleMap) => {
             let langs = ['English', 'Francais', 'Espanol', 'Portugues'];
@@ -39,6 +44,20 @@ const roleManager = {
         const langRoles = (await this.getUserRoles(member, client)).find(roleFilter);
     
         return langRoles;
+    },
+
+    async addRoleByName(member, roleName, client){
+        const roleFilter = (role, key, roleMap) => {
+            return role.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "") === roleName;
+        };
+        
+        const roleAdd = (await this.getAllRoles(client)).find(roleFilter);
+
+        member.roles.add(roleAdd);
+    },
+
+    async getUserMember(author, client){
+        return client.guilds.cache.find(e => e.name === process.env.SERVER_NAME).members.cache.get(author.id);
     }
 }
 

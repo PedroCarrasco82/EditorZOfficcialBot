@@ -6,7 +6,7 @@ const botController = require('./controller/botController');
 
 function updatedState(){
     client.user.setActivity({
-        name: `Official bot EditorZ`
+        name: `Official EditorZ bot`
     });
 }
 
